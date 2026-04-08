@@ -1,0 +1,13 @@
+{
+  "name": "vlv-whatsapp-server",
+  "version": "1.0.0",
+  "description": "VLV CRM WhatsApp Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  }
+}
