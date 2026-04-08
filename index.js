@@ -5,7 +5,9 @@ app.use(express.json());
 
 const ZAPI_INSTANCE = '3F158C331D8A326B611D2295B0810B48';
 const ZAPI_TOKEN = '8FB78AC69420CCDE31F20255';
+const ZAPI_CLIENT_TOKEN = 'F0eecc90b25204a33a8c3aa13f8a18969S';
 const ZAPI_URL = `https://api.z-api.io/instances/${ZAPI_INSTANCE}/token/${ZAPI_TOKEN}`;
+const ZAPI_HEADERS = { 'Client-Token': ZAPI_CLIENT_TOKEN };
 
 let conversations = {};
 
@@ -50,14 +52,18 @@ app.post('/enviar', async (req, res) => {
     const { phone, message } = req.body;
     if (!phone || !message) return res.status(400).json({ error: 'phone e message obrigatorios' });
     const phoneClean = phone.replace(/\D/g, '');
-    const response = await axios.post(`${ZAPI_URL}/send-text`, { phone: phoneClean, message });
+    const response = await axios.post(
+      `${ZAPI_URL}/send-text`,
+      { phone: phoneClean, message },
+      { headers: ZAPI_HEADERS }
+    );
     const timestamp = new Date().toLocaleString('pt-BR');
     if (!conversations[phoneClean]) conversations[phoneClean] = { phone: phoneClean, messages: [] };
     conversations[phoneClean].messages.push({ text: message, fromMe: true, time: timestamp, senderName: 'Consultor' });
     res.json({ success: true, data: response.data });
   } catch (e) {
     console.error('Erro enviar:', e.response?.data || e.message);
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: e.response?.data || e.message });
   }
 });
 
